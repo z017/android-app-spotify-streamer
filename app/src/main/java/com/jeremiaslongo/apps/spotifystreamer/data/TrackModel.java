@@ -8,6 +8,7 @@ public class TrackModel implements Parcelable{
     // Keys
     private static final String KEY_NAME = "name";
     private static final String KEY_ALBUM_NAME = "album_name";
+    private static final String KEY_ARTIST_NAME = "artist_name";
     private static final String KEY_ALBUM_ART_LARGE = "album_art_large";
     private static final String KEY_ALBUM_ART_ICON = "album_art_icon";
     private static final String KEY_PREVIEW_URL = "preview_url";
@@ -15,14 +16,16 @@ public class TrackModel implements Parcelable{
     // Data
     private String name;
     private String album_name;
+    private String artist_name;
     private String album_art_large;
     private String album_art_icon;
     private String preview_url;
 
     // Constructor
-    public TrackModel (String n, String an, String aal, String aai, String pu) {
+    public TrackModel (String n, String an, String arn, String aal, String aai, String pu) {
         this.name = n;
         this.album_name = an;
+        this.artist_name = arn;
         this.album_art_large = aal;
         this.album_art_icon = aai;
         this.preview_url = pu;
@@ -30,6 +33,7 @@ public class TrackModel implements Parcelable{
 
     public String getName() { return this.name; }
     public String getAlbumName() { return this.album_name; }
+    public String getArtistName() { return this.artist_name; }
     public String getAlbumArtLarge() { return this.album_art_large; }
     public String getAlbumArtIcon() { return this.album_art_icon; }
     public String getPreviewUrl() { return this.preview_url; }
@@ -47,6 +51,7 @@ public class TrackModel implements Parcelable{
         // insert the key value pairs to the bundle
         bundle.putString(KEY_NAME, name);
         bundle.putString(KEY_ALBUM_NAME, album_name);
+        bundle.putString(KEY_ARTIST_NAME, artist_name);
         bundle.putString(KEY_ALBUM_ART_LARGE, album_art_large);
         bundle.putString(KEY_ALBUM_ART_ICON, album_art_icon);
         bundle.putString(KEY_PREVIEW_URL, preview_url);
@@ -66,6 +71,7 @@ public class TrackModel implements Parcelable{
             return new TrackModel(
                     bundle.getString(KEY_NAME),
                     bundle.getString(KEY_ALBUM_NAME),
+                    bundle.getString(KEY_ARTIST_NAME),
                     bundle.getString(KEY_ALBUM_ART_LARGE),
                     bundle.getString(KEY_ALBUM_ART_ICON),
                     bundle.getString(KEY_PREVIEW_URL)

@@ -1,6 +1,8 @@
 package com.jeremiaslongo.apps.spotifystreamer.adapters;
 
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class ArtistsAdapter extends ArrayAdapter<ArtistModel> {
+
+    private final String LOG_TAG = ArtistsAdapter.class.getSimpleName();
 
     public ArtistsAdapter(Context context, int resourceID, ArrayList<ArtistModel> artists) {
         super(context, resourceID, artists);
@@ -41,8 +45,22 @@ public class ArtistsAdapter extends ArrayAdapter<ArtistModel> {
         // Update the item view
         ArtistModel artist = getItem(position);
 
+        /**
+         * REVIEW
+         *
+         * Picasso can crash your app if you the url you pass it in empty/malformed.
+         * Consider doing the check before calling into it.
+         *
+         * https://github.com/square/picasso/issues/609
+         */
+        String thumb = null;
+        try {
+            thumb = Uri.parse( artist.getImage() ).toString();
+        } catch (Exception e){
+            Log.e(LOG_TAG, e.toString());
+        }
         Picasso.with(getContext())
-                .load(artist.getImage())
+                .load(thumb)
                 .placeholder(R.mipmap.ic_launcher)
                 .into(viewHolder.imageView);
 

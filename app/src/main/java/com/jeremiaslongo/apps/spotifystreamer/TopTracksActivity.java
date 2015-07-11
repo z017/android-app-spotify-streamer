@@ -6,12 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.jeremiaslongo.apps.spotifystreamer.adapters.TracksAdapter;
 import com.jeremiaslongo.apps.spotifystreamer.data.TrackModel;
+import com.jeremiaslongo.apps.spotifystreamer.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,16 +81,28 @@ public class TopTracksActivity extends ActionBarActivity {
     }
 
     // FetchArtistsTask
-    public class FetchTracksTask extends AsyncTask<String, Void, ArrayList<TrackModel>> {
+    public class FetchTracksTask extends AsyncTask<String, Void, String> {
 
         private final String LOG_TAG = FetchTracksTask.class.getSimpleName();
 
+        private ArrayList<TrackModel> mFetchedTracks;
+
         @Override
-        protected ArrayList<TrackModel> doInBackground(String... params) {
+        protected String doInBackground(String... params) {
+            /**
+             * REVIEW
+             *
+             * Check if there's network connectivity before calling into the spotify API.
+             * This gives a more responsive output to the user rather than them having to wait
+             * everytime you go through the API and hit an exception.
+             */
+            if ( !Utils.isNetworkAvailable(getApplicationContext()) ){
+                return getString(R.string.network_unavailable);
+            }
 
             // If there is an empty search query, return
             if (params.length == 0) {
-                return null;
+                return getString(R.string.empty_id);
             }
 
             try {
@@ -124,43 +135,41 @@ public class TopTracksActivity extends ActionBarActivity {
                         TrackModel trackModel = new TrackModel(
                                 track.name,
                                 track.album.name,
+                                mArtistName,
                                 album_large_image,
                                 album_icon_image,
                                 track.preview_url);
                         tracks.add(trackModel);
                     }
                     Log.d(LOG_TAG, "Tracks fetched: " + tracks.size());
-                    return tracks;
+                    mFetchedTracks = tracks;
+                    return null;
 
                 }else{
-                    return null;
+                    return getString(R.string.no_tracks_found);
                 }
 
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.toString());
-                return null;
+                return getString(R.string.spotify_api_error);
             }
         }
 
         @Override
         public void onPreExecute(){
-            Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.loading), Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-            toast.show();
+            Utils.alert(getApplicationContext(), getString(R.string.loading));
         }
 
         @Override
-        public void onPostExecute(ArrayList<TrackModel> tracks){
-            if ( tracks != null ) {
-                mTracks = tracks;
+        public void onPostExecute(String error){
+            if ( error != null ) {
+                Utils.alert(getApplicationContext(), error);
+            } else {
+                mTracks = mFetchedTracks;
                 if (mTracksAdapter.getCount() > 0 ) {
                     mTracksAdapter.clear();
                 }
                 mTracksAdapter.addAll(mTracks);
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_tracks_found), Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                toast.show();
             }
         }
     }

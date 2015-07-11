@@ -6,7 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.jeremiaslongo.apps.spotifystreamer"
-        minSdkVersion 11
+        // REVIEW: Support about 95% of the user base as well as use Android's latest features.
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -16,6 +17,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        encoding "UTF-8"
     }
 }
 

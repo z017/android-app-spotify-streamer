@@ -5,15 +5,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.jeremiaslongo.apps.spotifystreamer.adapters.ArtistsAdapter;
 import com.jeremiaslongo.apps.spotifystreamer.data.ArtistModel;
+import com.jeremiaslongo.apps.spotifystreamer.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -39,6 +38,15 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         SearchView searchView = (SearchView) findViewById(R.id.search_artist_view);
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint(getString(R.string.search_hint));
+        /*
+         * REVIEW
+         *
+         * If the searchView is iconified the user always needs to click on the search icon to start
+         * using the app.
+         * Keeping it open by default saves them a click since they would invariably always need to
+         * do it before starting to search (Clicks are precious).
+         */
+        searchView.setIconifiedByDefault(false);
 
         // Read Saved Instance State
         if(savedInstanceState != null) {
@@ -93,16 +101,28 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     }
 
     // FetchArtistsTask
-    public class FetchArtistsTask extends AsyncTask<String, Void, ArrayList<ArtistModel>> {
+    public class FetchArtistsTask extends AsyncTask<String, Void, String> {
 
         private final String LOG_TAG = FetchArtistsTask.class.getSimpleName();
 
+        private ArrayList<ArtistModel> mFetchedArtists;
+
         @Override
-        protected ArrayList<ArtistModel> doInBackground(String... params) {
+        protected String doInBackground(String... params) {
+            /**
+             * REVIEW
+             *
+             * Check if there's network connectivity before calling into the spotify API.
+             * This gives a more responsive output to the user rather than them having to wait
+             * everytime you go through the API and hit an exception.
+             */
+            if ( !Utils.isNetworkAvailable(getApplicationContext()) ){
+                return getString(R.string.network_unavailable);
+            }
 
             // If there is an empty search query, return
             if (params.length == 0) {
-                return null;
+                return getString(R.string.empty_query);
             }
 
             try {
@@ -127,37 +147,34 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
                         artists.add(artistModel);
                     }
                     Log.d(LOG_TAG, "Artists fetched: " + artists.size());
-                    return artists;
+                    mFetchedArtists = artists;
+                    return null;
 
                 }else{
-                    return null;
+                    return getString(R.string.no_artist_found);
                 }
 
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.toString());
-                return null;
+                return getString(R.string.spotify_api_error);
             }
         }
 
         @Override
         public void onPreExecute(){
-            Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.searching), Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-            toast.show();
+            Utils.alert(getApplicationContext(), getString(R.string.searching));
         }
 
         @Override
-        public void onPostExecute(ArrayList<ArtistModel> artists){
-            if ( artists != null ) {
-                mArtists = artists;
+        public void onPostExecute(String error){
+            if ( error != null ) {
+                Utils.alert(getApplicationContext(), error);
+            } else {
+                mArtists = mFetchedArtists;
                 if (mArtistsAdapter.getCount() > 0 ) {
                     mArtistsAdapter.clear();
                 }
                 mArtistsAdapter.addAll(mArtists);
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_artist_found), Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                toast.show();
             }
         }
     }

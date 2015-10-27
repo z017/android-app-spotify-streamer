@@ -6,7 +6,6 @@ android {
 
     defaultConfig {
         applicationId "com.jeremiaslongo.apps.spotifystreamer"
-        // REVIEW: Support about 95% of the user base as well as use Android's latest features.
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1

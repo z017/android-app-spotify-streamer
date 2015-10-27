@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jeremiaslongo.apps.spotifystreamer.activity.MainActivity"
+
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SearchView
+        android:id="@+id/search_artist_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp" />
+
+    <ListView
+        android:id="@+id/list_artists_view"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        style="@style/SearchArtistStyle"/>
+</LinearLayout>

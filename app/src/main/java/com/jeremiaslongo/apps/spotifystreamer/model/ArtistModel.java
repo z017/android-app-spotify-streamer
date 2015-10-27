@@ -1,10 +1,14 @@
-package com.jeremiaslongo.apps.spotifystreamer.data;
+package com.jeremiaslongo.apps.spotifystreamer.model;
 
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.makeLogTag;
+
 public class ArtistModel implements Parcelable {
+    // TAG
+    public static final String TAG = makeLogTag(ArtistModel.class);
 
     // Keys
     private static final String KEY_SPOTIFY_ID = "spotify_id";

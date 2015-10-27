@@ -1,8 +1,6 @@
-package com.jeremiaslongo.apps.spotifystreamer.adapters;
+package com.jeremiaslongo.apps.spotifystreamer.adapter;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +9,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jeremiaslongo.apps.spotifystreamer.R;
-import com.jeremiaslongo.apps.spotifystreamer.data.TrackModel;
-import com.squareup.picasso.Picasso;
+import com.jeremiaslongo.apps.spotifystreamer.model.TrackModel;
+import com.jeremiaslongo.apps.spotifystreamer.util.ImageLoader;
 
 import java.util.ArrayList;
 
+import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.makeLogTag;
+
 public class TracksAdapter extends ArrayAdapter<TrackModel> {
+    // TAG
+    public static final String TAG = makeLogTag(TracksAdapter.class);
 
-    private final String LOG_TAG = TracksAdapter.class.getSimpleName();
-
-    public TracksAdapter(Context context, int resourceID, ArrayList<TrackModel> tracks) {
-        super(context, resourceID, tracks);
+    public TracksAdapter(Context context, ArrayList<TrackModel> tracks) {
+        super(context, R.layout.list_item_tracks, tracks);
     }
 
     // How each list item will look.
@@ -45,32 +45,17 @@ public class TracksAdapter extends ArrayAdapter<TrackModel> {
         // Update the item view
         TrackModel track = getItem(position);
 
-        /**
-         * REVIEW
-         *
-         * Picasso can crash your app if you the url you pass it in empty/malformed.
-         * Consider doing the check before calling into it.
-         *
-         * https://github.com/square/picasso/issues/609
-         */
-        String thumb = null;
-        try {
-            thumb = Uri.parse(track.getAlbumArtIcon()).toString();
-        } catch (Exception e){
-            Log.e(LOG_TAG, e.toString());
-        }
-        Picasso.with(getContext())
-                .load(thumb)
-                .placeholder(R.mipmap.ic_launcher)
-                .into(viewHolder.iconView);
-
+        ImageLoader.drawWithDummy(getContext(), track.getAlbumArtIcon(), viewHolder.iconView);
         viewHolder.nameView.setText(track.getName());
-
         viewHolder.albumNameView.setText(track.getAlbumName());
 
         // Return the view
         return view;
     }
+
+
+
+
 
     /**
      * Cache of the children views for an Artist list item.

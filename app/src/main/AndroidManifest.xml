@@ -5,28 +5,63 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".TopTracksActivity"
+            android:name=".activity.TopTracksActivity"
             android:label="@string/title_activity_top_tracks"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".activity.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activity.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".activity.PlayerActivity"
+            android:label="@string/title_activity_player"
+            android:parentActivityName=".activity.TopTracksActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.TopTracksActivity" />
+        </activity>
+
+        <service android:exported="false" android:name=".service.MusicService">
+            <intent-filter>
+                <action android:name="com.jeremiaslongo.musicservice.action.PLAY" />
+                <action android:name="com.jeremiaslongo.musicservice.action.PAUSE" />
+                <action android:name="com.jeremiaslongo.musicservice.action.NEXT" />
+                <action android:name="com.jeremiaslongo.musicservice.action.PREVIOUS" />
+                <action android:name="com.jeremiaslongo.musicservice.action.TOGGLE" />
+                <action android:name="com.jeremiaslongo.musicservice.action.STOP" />
+                <action android:name="com.jeremiaslongo.musicservice.action.INIT" />
+                <action android:name="com.jeremiaslongo.musicservice.action.GOTO" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".service.MusicService$MusicIntentReceiver">
+            <intent-filter>
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

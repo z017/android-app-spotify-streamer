@@ -6,12 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="40dp"
+    android:background="@drawable/touch_selector"
     android:padding="16dp">
 
     <ImageView
         android:id="@+id/list_item_artist_image_imageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:maxWidth="80dp"
+        android:maxHeight="80dp"
         android:paddingRight="16dp"/>
 
     <TextView

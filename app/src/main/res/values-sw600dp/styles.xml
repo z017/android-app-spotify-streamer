@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="SearchArtistStyle">
+        <item name="android:choiceMode">singleChoice</item>
+    </style>
+
+</resources>

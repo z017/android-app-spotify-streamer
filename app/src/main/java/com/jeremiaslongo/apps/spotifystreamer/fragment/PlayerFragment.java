@@ -1,5 +1,6 @@
 package com.jeremiaslongo.apps.spotifystreamer.fragment;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 
 import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.LOGD;
 import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.LOGE;
+import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.LOGI;
 import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.makeLogTag;
 
 /**
@@ -68,25 +71,36 @@ public class PlayerFragment extends DialogFragment implements OnClickListener, S
         }
     };
 
+
     /**
-     * This method will only be called once when the retained
-     * Fragment is first created.
+     * Create a new instance of PlayerFragment
      */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Retain this fragment across configuration changes.
-        // http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html
-        setRetainInstance(true);
+    public static PlayerFragment newInstance(ArtistModel artist, ArrayList<TrackModel> tracks, int trackIndex) {
+        // New instance
+        PlayerFragment f = new PlayerFragment();
+
+        // Create arguments bundle
+        Bundle args = new Bundle();
+        args.putParcelable(KEY_ARTIST, artist);
+        args.putParcelableArrayList(KEY_TRACKS, tracks);
+        args.putInt(KEY_TRACK_INDEX, trackIndex);
+
+        // Supply arguments.
+        f.setArguments(args);
+        // Return fragment
+        return f;
     }
 
     @Override
-    public void onDestroy(){
-        super.onDestroy();
-        // Stop Media Service
-        Intent intent = new Intent(getActivity(), MusicService.class);
-        getActivity().startService(intent.setAction(MusicService.ACTION_STOP));
-        LOGD(TAG, "Stop Music Service");
+    public void onStop(){
+        super.onStop();
+        // If not stopped by a configuration change
+        if( !getActivity().isChangingConfigurations() ) {
+            // Stop Media Service
+            Intent intent = new Intent(getActivity(), MusicService.class);
+            getActivity().startService(intent.setAction(MusicService.ACTION_STOP));
+            LOGD(TAG, "Stop Music Service");
+        }
     }
 
 
@@ -100,25 +114,23 @@ public class PlayerFragment extends DialogFragment implements OnClickListener, S
 
     @Override
     public void onPause(){
-        super.onPause();
-        // Unregistering the broadcast receiver
-        // Using a try & catch, hint by:
-        // http://stackoverflow.com/questions/6165070/receiver-not-registered-exception-error
+        // Unregister the broadcast receiver since the activity is not visible
         try {
-            getActivity().unregisterReceiver(mBroadcastReceiver);
+            LocalBroadcastManager.getInstance(getActivity()).
+                    unregisterReceiver(mBroadcastReceiver);
             mBroadcastReceiver = null;
         } catch (Exception e) {
             LOGE(TAG, e.getMessage());
         }
+        super.onPause();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Dialog without title
+        // dialog without title
         if( getDialog() != null ) {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            getDialog().setCanceledOnTouchOutside(true);
         }
 
         // Inflate the layout for this fragment
@@ -167,6 +179,7 @@ public class PlayerFragment extends DialogFragment implements OnClickListener, S
         // Return fragment view
         return rootView;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState){

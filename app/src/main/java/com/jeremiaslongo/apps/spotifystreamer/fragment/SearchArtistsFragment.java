@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import com.jeremiaslongo.apps.spotifystreamer.R;
@@ -16,6 +17,7 @@ import com.jeremiaslongo.apps.spotifystreamer.task.FetchArtistsTask;
 
 import java.util.ArrayList;
 
+import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.LOGD;
 import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.makeLogTag;
 
 public class SearchArtistsFragment extends Fragment implements SearchView.OnQueryTextListener, FetchArtistsTask.FetchArtistListener {
@@ -27,8 +29,14 @@ public class SearchArtistsFragment extends Fragment implements SearchView.OnQuer
     private ArrayList<ArtistModel> mArtists;
     private static final String KEY_ARTISTS = "artists";
 
+    // SearchView
+    private SearchView mSearchView;
+
     // ListView
     private ListView mListView;
+
+    // ProgressBar - https://guides.codepath.com/android/Handling-ProgressBars
+    private ProgressBar mProgress;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -69,9 +77,9 @@ public class SearchArtistsFragment extends Fragment implements SearchView.OnQuer
         });
 
         // Search View
-        SearchView searchView = (SearchView) rootView.findViewById(R.id.search_artist_view);
-        searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint(getString(R.string.search_hint));
+        mSearchView = (SearchView) rootView.findViewById(R.id.search_artist_view);
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setQueryHint(getString(R.string.search_hint));
         /*
          * REVIEW
          *
@@ -80,7 +88,10 @@ public class SearchArtistsFragment extends Fragment implements SearchView.OnQuer
          * Keeping it open by default saves them a click since they would invariably always need to
          * do it before starting to search (Clicks are precious).
          */
-        searchView.setIconifiedByDefault(false);
+        mSearchView.setIconifiedByDefault(false);
+
+        // Progress View
+        mProgress = (ProgressBar) rootView.findViewById(R.id.progress_view);
 
         // Return fragment view
         return rootView;
@@ -101,19 +112,33 @@ public class SearchArtistsFragment extends Fragment implements SearchView.OnQuer
 
     // SearchView.OnQueryTextListener function
     public boolean onQueryTextSubmit(String query) {
+        // This avoid the twice call of this function
+        mSearchView.clearFocus();
+
+        // Clear adapter
+        if (mArtistsAdapter != null && mArtistsAdapter.getCount() > 0 ) {
+            mArtistsAdapter.clear();
+        }
+
+        // Visible Progress
+        mProgress.setVisibility(ProgressBar.VISIBLE);
+
         // Search Artist
         new FetchArtistsTask(getActivity(),this).execute(query);
-        return false;
+        return true;
     }
 
     @Override
     public void onArtistsFetched(ArrayList<ArtistModel> artists) {
-        mArtists = artists;
-        // Clear adapter
-        if (mArtistsAdapter.getCount() > 0 ) {
-            mArtistsAdapter.clear();
+        // Remove Progress
+        mProgress.setVisibility(ProgressBar.GONE);
+
+        // If we get artists
+        if (artists != null) {
+            mArtists = artists;
+
+            // Add Artists
+            mArtistsAdapter.addAll(mArtists);
         }
-        // Add Artists
-        mArtistsAdapter.addAll(mArtists);
     }
 }

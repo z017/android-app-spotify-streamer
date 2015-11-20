@@ -12,6 +12,15 @@
         android:layout_height="wrap_content"
         android:padding="6dp" />
 
+    <ProgressBar
+        android:id="@+id/progress_view"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:indeterminate="true" />
+
     <ListView
         android:id="@+id/list_artists_view"
         android:layout_width="match_parent"

@@ -114,11 +114,6 @@ public class FetchTracksTask extends AsyncTask<String, String, ArrayList<TrackMo
     }
 
     @Override
-    protected void onPreExecute() {
-        AppUtils.alert(mContext, mContext.getString(R.string.loading));
-    }
-
-    @Override
     protected void onProgressUpdate(String... states) {
         if (states.length > 0) {
             AppUtils.alert(mContext, states[0]);
@@ -127,8 +122,6 @@ public class FetchTracksTask extends AsyncTask<String, String, ArrayList<TrackMo
 
     @Override
     public void onPostExecute(ArrayList<TrackModel> tracks){
-        if ( tracks != null ) {
-            mListener.onTracksFetched(tracks);
-        }
+        mListener.onTracksFetched(tracks);
     }
 }

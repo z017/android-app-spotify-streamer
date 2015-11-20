@@ -6,6 +6,10 @@ import android.view.MenuItem;
 
 import com.jeremiaslongo.apps.spotifystreamer.R;
 import com.jeremiaslongo.apps.spotifystreamer.fragment.PlayerFragment;
+import com.jeremiaslongo.apps.spotifystreamer.model.ArtistModel;
+import com.jeremiaslongo.apps.spotifystreamer.model.TrackModel;
+
+import java.util.ArrayList;
 
 import static com.jeremiaslongo.apps.spotifystreamer.util.LogUtils.makeLogTag;
 
@@ -23,16 +27,11 @@ public class PlayerActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             // Create the player fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(PlayerFragment.KEY_ARTIST,
-                    getIntent().getParcelableExtra(PlayerFragment.KEY_ARTIST));
-            arguments.putParcelableArrayList(PlayerFragment.KEY_TRACKS,
-                    getIntent().getParcelableArrayListExtra(PlayerFragment.KEY_TRACKS));
-            arguments.putInt(PlayerFragment.KEY_TRACK_INDEX,
-                    getIntent().getIntExtra(PlayerFragment.KEY_TRACK_INDEX, 0));
+            ArtistModel artist = getIntent().getParcelableExtra(PlayerFragment.KEY_ARTIST);
+            ArrayList<TrackModel> tracks = getIntent().getParcelableArrayListExtra(PlayerFragment.KEY_TRACKS);
+            int trackIndex = getIntent().getIntExtra(PlayerFragment.KEY_TRACK_INDEX, 0);
 
-            PlayerFragment fragment = new PlayerFragment();
-            fragment.setArguments(arguments);
+            PlayerFragment fragment = PlayerFragment.newInstance(artist, tracks, trackIndex);
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, fragment, PlayerFragment.TAG)

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.jeremiaslongo.apps.spotifystreamer.R;
 import com.jeremiaslongo.apps.spotifystreamer.adapter.TracksAdapter;
@@ -37,6 +38,9 @@ public class TopTracksFragment extends Fragment implements FetchTracksTask.Fetch
     // ListView
     private ListView mListView;
 
+    // ProgressBar - https://guides.codepath.com/android/Handling-ProgressBars
+    private ProgressBar mProgress;
+
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -51,6 +55,9 @@ public class TopTracksFragment extends Fragment implements FetchTracksTask.Fetch
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
+
+        // Progress View
+        mProgress = (ProgressBar) rootView.findViewById(R.id.progress_view);
 
         // Read Saved Instance State
         if(savedInstanceState != null) {
@@ -109,18 +116,30 @@ public class TopTracksFragment extends Fragment implements FetchTracksTask.Fetch
 
     private void fetchTopTracks() {
         if (mArtist != null) {
+            // Clear adapter
+            if (mTracksAdapter != null && mTracksAdapter.getCount() > 0 ) {
+                mTracksAdapter.clear();
+            }
+
+            // Visible Progress
+            mProgress.setVisibility(ProgressBar.VISIBLE);
+
+            // Fetch Tracks
             new FetchTracksTask(getActivity(), this).execute(mArtist.getSpotifyId());
         }
     }
 
     @Override
     public void onTracksFetched(ArrayList<TrackModel> tracks) {
-        mTracks = tracks;
-        // Clear adapter
-        if (mTracksAdapter.getCount() > 0 ) {
-            mTracksAdapter.clear();
+        // Remove Progress
+        mProgress.setVisibility(ProgressBar.GONE);
+
+        // If we get Tracks
+        if (tracks != null) {
+            mTracks = tracks;
+
+            // Add Tracks Fetched
+            mTracksAdapter.addAll(tracks);
         }
-        // Add Tracks Fetched
-        mTracksAdapter.addAll(tracks);
     }
 }

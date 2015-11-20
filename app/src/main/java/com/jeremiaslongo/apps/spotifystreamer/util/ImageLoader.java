@@ -25,7 +25,8 @@ public class ImageLoader {
         try {
             thumb = Uri.parse(uriStr).toString();
         } catch (Exception e) {
-            LOGE(TAG, e.toString());
+            // Invalid URI
+            // LOGD(TAG, e.toString());
         }
         Picasso.with(context)
                 .load(thumb)

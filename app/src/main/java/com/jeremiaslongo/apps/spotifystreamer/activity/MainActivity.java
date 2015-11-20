@@ -1,5 +1,7 @@
 package com.jeremiaslongo.apps.spotifystreamer.activity;
 
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -72,24 +74,8 @@ public class MainActivity extends ActionBarActivity implements SearchArtistsFrag
     // TopTracksFragment Callback
     @Override
     public void onItemSelected(ArtistModel artist, ArrayList<TrackModel> tracks, int trackIndex) {
-        if (mTwoPane) {
-            // In two-pane mode, use fragment.
-            Bundle args = new Bundle();
-            args.putParcelable(PlayerFragment.KEY_ARTIST, artist);
-            args.putParcelableArrayList(PlayerFragment.KEY_TRACKS, tracks);
-            args.putInt(PlayerFragment.KEY_TRACK_INDEX, trackIndex);
-
-            PlayerFragment fragment = new PlayerFragment();
-            fragment.setArguments(args);
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragment.show(fragmentManager, PlayerFragment.TAG);
-        } else {
-            Intent intent = new Intent(this, PlayerActivity.class)
-                    .putExtra(PlayerFragment.KEY_ARTIST, artist)
-                    .putExtra(PlayerFragment.KEY_TRACK_INDEX, trackIndex)
-                    .putParcelableArrayListExtra(PlayerFragment.KEY_TRACKS, tracks);
-            startActivity(intent);
-        }
+        // Create and show the dialog.
+        PlayerFragment fragment = PlayerFragment.newInstance(artist, tracks, trackIndex);
+        fragment.show(getSupportFragmentManager(), PlayerFragment.TAG);
     }
 }

@@ -1,12 +1,22 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.jeremiaslongo.apps.spotifystreamer.activity.TopTracksActivity"
 
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+
+    <ProgressBar
+        android:id="@+id/progress_view"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:indeterminate="true" />
 
     <ListView
         android:id="@+id/list_toptracks_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-</FrameLayout>
+</LinearLayout>

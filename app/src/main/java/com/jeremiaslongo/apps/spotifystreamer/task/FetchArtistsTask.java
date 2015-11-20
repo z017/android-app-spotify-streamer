@@ -93,12 +93,6 @@ public class FetchArtistsTask extends AsyncTask<String, String, ArrayList<Artist
         }
     }
 
-
-    @Override
-    protected void onPreExecute() {
-        AppUtils.alert(mContext, mContext.getString(R.string.searching));
-    }
-
     @Override
     protected void onProgressUpdate(String... states) {
         if (states.length > 0) {
@@ -108,8 +102,6 @@ public class FetchArtistsTask extends AsyncTask<String, String, ArrayList<Artist
 
     @Override
     protected void onPostExecute(ArrayList<ArtistModel> artists) {
-        if ( artists != null ) {
-            mListener.onArtistsFetched(artists);
-        }
+        mListener.onArtistsFetched(artists);
     }
 }
